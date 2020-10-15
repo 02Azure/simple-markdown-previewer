@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html lang="id">
+
+<head>
+
+  <link rel="stylesheet" href="CSS draft.css" type="text/css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<main>
+  <div id ="editorPreviewerApp" ></div>
+  <script type="text/babel">
+  	marked.setOptions({
+			gfm:true,
+			breaks:true
+		});
+	 
+		class TheApp extends React.Component{
+			constructor(props){
+				super(props);
+				this.state = {
+					input:placeholderEditor,
+					maxEditor: false,
+					maxPreview: false,
+					showEditor: false
+				}
+			}
+			
+			handleMaximizeEditor(){
+			  this.setState({
+				  maxEditor: !this.state.maxEditor,
+					showEditor: false
+			  });
+			}
+			handleMaximizePreviewer(){
+			  this.setState({
+					maxPreview: !this.state.maxPreview,
+					showEditor: false
+				});
+			}
+			handleToggleEditor(){
+				this.setState({
+					showEditor:!this.state.showEditor
+				});
+			} 
+			handleUpdateInput(updateInput){
+			  this.setState({
+				  input:updateInput.target.value
+			  }); 
+			}  
+			
+			render(){
+        let classes = ['2winview','2winview','fas fa-window-maximize','fas fa-window-maximize','minimize'];				
+				//class untuk: layout editor, layout preview, icon title bar pertama editor, viewer, icon title bar Preview kedua
+				if(this.state.maxEditor)
+				  classes = ['maximize','minimize','fas fa-columns','fas fa-columns','minimize'];
+				else if(this.state.maxPreview){
+					classes = ['minimize','maximize','minimize','fas fa-columns','far fa-eye'];
+					  if(this.state.showEditor)
+						  classes = ['small','maximize','minimize','fas fa-columns','far fa-eye-slash'];
+				}
+				
+				return(
+				<div id = {'appContainer'}>
+					<div id = {'editorContainer'} className = {classes[0]}>
+						<TitleBar 
+						  displayTitle={"Editor"}
+							icon1  = {'nothing'}
+							icon2  = {classes[2]}
+							onClick2 = {this.handleMaximizeEditor.bind(this)}
+						/>
+						<Editor
+							value = {this.state.input}
+							onChange = {this.handleUpdateInput.bind(this)}
+						/>
+					</div>
+				
+					<div id = {'previewerContainer'} className = {classes[1]}>
+						<TitleBar
+						  displayTitle={"Previewer"}
+						  icon1 = {classes[4]}
+              icon2 = {classes[3]}	
+              onClick1 = {this.handleToggleEditor.bind(this)}
+              onClick2 = {this.handleMaximizePreviewer.bind(this)}							
+						/>
+						<Previewer input = {this.state.input}/>
+					</div>
+				</div>
+			);
+			}
+		}
+
+		const TitleBar = props => {
+			return(
+				<div className="titleBar">
+						{props.displayTitle}
+						<div className="icon">
+							<a onClick = {props.onClick1}>
+							  <i 
+								className = {props.icon1}
+								style={{paddingRight:10}}
+							  />
+							</a>
+							<a><i 
+								className = {props.icon2}
+								onClick = {props.onClick2}
+							/></a>
+						</div>
+				</div>
+			)
+		}
+
+		const Editor = props => {
+			return(
+				<textarea
+				id = "editor"
+				value = {props.value}
+					onChange = {props.onChange} 
+			/>
+			)
+		}
+ 
+		const Previewer = props => {
+			return(
+				<div
+				dangerouslySetInnerHTML={{__html:marked(props.input)}}
+				id = "preview"
+			>
+			</div>
+			)
+		}
+
+		const placeholderEditor = 
+`# React Markdown Previewer
+
+*Laman ini dibuat sebagai latihan*	
+Editor dibuat dengan React dan menggunakan library [Marked](https://marked.js.org/). Menggunakan Marked cukup simpel, hanya dengan me-ref ke [CDN Marked](https://cdn.jsdelivr.net/npm/marked/marked.min.js), kita dapat langsung menggunakannya dengan fungsi:
+\`\`\`
+const sesuatu = '**beri saya markdown marked!!!**'
+document.getElementById('testing') = marked(sesuatu);
+//Elemen dengan ID testing akan memiliki  
+//konten sesuai var sesuatu dalam bold
+\`\`\`
+Tinggal ketik sesuatu di jendela Editor, hasilnya akan langsung tampak di jendela Preview! Untuk menunjukkan kemampuan library ini, artikel pendek dibawah ditulis menggunakan Marked tanpa memasukkan secara langsung tag HTML apapun!
+
+## Just another random meme list
+### [Pepe the Frog](https://en.wikipedia.org/wiki/Pepe_the_Frog)
+![sadge](https://lh3.googleusercontent.com/pw/ACtC-3eojggz8eoHMe_kLdlUXR_1-d60c9EPiMeSc-64SSp3CQ-AKC6PYmfaRAPsLsHyQ6r056uy_Zhg5CO_ZQBW-mITK969ZkUGG2pcAsgGuPz0gfT9p06ET6_NkCpYjhI4gFY81BOQ7oBQqhQR02khsppM=s200-no?authuser=0)
+Pepe the frog ini merupakan meme klasik, yang telah ada dari tahun **2005**! Pepe memiliki banyak variasi ekspresi, seperti sedikit diantaranya yang masih eksis:
+- pepehands
+- sadge
+- peperip
+- pepega
+- pepeg
+
+### [Hackerman](https://knowyourmeme.com/memes/hackerman)
+![hackerman](https://lh3.googleusercontent.com/pw/ACtC-3d_4R8Psn-01bC82GYvkK7THp9fmhiln9pE4sUR521Lb_Pki2UrS1vv8IOiJ2N5bM-cLSPPTqoa0IcfhQj3dCHQr8X24vjQJl807GXmqGQi9vL_R4ORX70e0iSKtPjvaTClS5xFd7tdKelD0f_h4Myd=s300)
+Meme Hackerman mulai banyak digunakan diawal tahun 2017, yang biasanya untuk mengekpresikan saat berhasil menyelesaikan sesuatu yang simpel (khususnya berhubungan dengan teknologi komputer/programming).
+contoh:
+tfw saat sukses me-run \`console.log("Hello world!")\`
+
+### [The Magic Conch Shell](https://knowyourmeme.com/memes/the-magic-conch-shell)
+![kerangajaib](https://lh3.googleusercontent.com/pw/ACtC-3ecitkVTS28jp1rpXu-JpHiQKA1Wz0cwFzsYHj1fA7yH8z8IWGPFeM8VTI7PlWCbJUOMZWTSIoel37-MYstN95TcB42KwHO79Alw6lRJTHMAbAtyXpaH9e1mUyUokjaHAvwzxu_ZcfyyRXNC5upkiyy=w300)
+Dikenal dengan Kerang Ajaib di Indonesia. Biasanya digunakan untuk menjawab sesuatu yang absurd, atau hanya sekadar permainan seperti contohnya dari [halaman ini](https://codepen.io/02azure/full/yLJypEb) yang saya buat sendiri!
+contoh:
+"Oh kerang ajaib, apakah aku harus belajar untuk UTS?"
+> _Kurasa Tidak_
+
+"Kerang ajaib telah bersabda!!"`;
+
+		ReactDOM.render(<TheApp/>, document.getElementById('editorPreviewerApp'))
+  </script>
+</main>
+
+</html>
